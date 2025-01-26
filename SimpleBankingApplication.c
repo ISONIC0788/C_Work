@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include <stdlib.h>
 struct myaddress{
 	char *district  ;
 	char *sector  ;
@@ -137,9 +138,11 @@ int main(){
 			printf("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			printf("\n+            THANK YOU FOR USE OUR SERVICE            +");
 			printf("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			exit(1);
 		break;
 		default:
 			printf("\n Oooo Invalid Value you Have Entered\n ");
+			
 			
 	}
 		
