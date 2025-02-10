@@ -11,6 +11,10 @@
  int passkey;
  int SavedPin; 
  char userName[100];
+ char arrUserinfo[4];
+ 
+  char inputUserName[200];
+ 
 // start  my function decration
  
 /*
@@ -20,15 +24,21 @@
 void transfer();
 void transactionMessage(int amount);
 
-void amauntFile(){
+void balanceRead(){
 		// to read file number 
 	FILE *file;
-	file = fopen("amount.txt", "r");
+	
+	/*
+	 user file search  
+	 code
+	*/
+	
+	file = fopen("Users/ebedi/Balance.txt", "r");
 	if(file == NULL){
 		printf("Oop File doest not Exist ");
 //		return 1;
 	}
-	if(fscanf(file,"%d %d",&amount,&tel)== 2){
+	if(fscanf(file,"%d ",&amount)== 2){
 		
 	}else{
 		printf("Filed to read Amount");
@@ -36,67 +46,93 @@ void amauntFile(){
 	fclose(file);
 }
 
-void  checkPin(){
-		FILE *pfile ;
-	pfile = fopen("pin.txt","r");
-	
-	if(pfile == NULL){
-		printf("File does no exit");
-		
+void readUserInfo(){
+	FILE *userfile;
+	userfile = fopen("Users/ebedi/User Information.txt", "r");
+	if(userfile== NULL){
+	   printf("File is not found ");
 	}
 	
-	if(fscanf(pfile ,"%d",&SavedPin)==1){
-		printf("The pin is ",SavedPin);
-	}else{
-		printf("Failed To read pin ");
+  char line[256];
+  
+  // checking array meory allocation
+  
+    char **array = NULL ;
+    int size = 0 ; // the number of line to read 
+    int capacity = 4;
+  
+    array = (char **)malloc(capacity * sizeof(char *));
+    if(array == NULL){
+  	perror("\n Memory alloction is fieled\n");
+  	fclose(userfile);
+    }else{
+    	printf("\nis true \n");
 	}
-	fclose(pfile);
+  
+  
+  while(fgets(line, sizeof(line),userfile)){
+  	 printf("%s",line);
+  	 // array 
+  	 line[strcspn(line, "\n")] = '\0';
+  	 
+  	 // to re allocate the memory address 
+  	 if(size == capacity){
+  	 	capacity *=2 ;
+  	 	array = (char **)realloc(array ,capacity * sizeof(char *));  // for reallocation 
+  	 	if (array == NULL){
+  	 		perror("Memory realloction Falied ");
+  	 		fclose(userfile);
+		   }
+	   }
+	   
+	   // to allocate memory 
+	   array[size] = (char * )malloc(strlen(line) + 1);
+	   
+	   if (array[size]== NULL){
+	   	perror("Memory allocation fail to string");
+	   	fclose(userfile);
+	   }
+  	   strcpy(array[size],line);
+  	   size++;
+  	 
+  }
+  
+  // end  for assigning 
+  
+  fclose(userfile);
+  
+  printf ("\n Array string : \n  ");
+  
+  for (int i = 0 ; i< size ; i ++){
+  	 printf("%s\t", array[i]);
+        free(array[i]);
+        
+  }
+//  printf("\n the array on %s ",array[0]);
+  printf("\n the array on %s ",array[1]);
+  
+  printf("\n the array on %s ",array[2]);
+  printf("\n the array on %s ",array[3]);
+
+
+  // to read only line  
+     	
 }
 
-void  checkuSername(){
-		FILE *pfile ;
-	pfile = fopen("username.txt","r");
-	
-	if(pfile == NULL){
-		printf("File does no exit");
-		
-	}
-	
-	if(fscanf(pfile ,"%s",&userName)==1){
-		printf("The pin is ",userName);
-	}else{
-		printf("Failed To read pin ");
-	}
-	fclose(pfile);
-}
-void  checkTelnumber(){
-		FILE *pfile ;
-	pfile = fopen("telnum.txt","r");
-	
-	if(pfile == NULL){
-		printf("File does no exit");
-		
-	}
-	
-	if(fscanf(pfile ,"%s",&tel)==1){
-		printf("The tel is ",tel);
-	}else{
-		printf("Failed To read pin ");
-	}
-	fclose(pfile);
-}
+
+
 
 
 // end for open function 
 int main(){
 /*
-this my function
-
+ this my function
 */
- amauntFile();
- checkPin();
- checkuSername();
- transfer(); 
+ readUserInfo();
+// balanceRead();
+////
+//
+// transfer();
 
 /*
  end fro my function 
@@ -118,7 +154,7 @@ void transfer(){
  printf("\n|   Welcome come to money transifer   |");
  printf("\n+++++++++++++++++++++++++++++++++++++++");
  
- char inputUserName[200];
+
  printf("\n || Enter User Name:");
  fgets(inputUserName,sizeof(inputUserName),stdin);
  inputUserName[strcspn(inputUserName , "\n")] = 0 ;
@@ -135,7 +171,7 @@ void transfer(){
  // for checkin  pin 
  while (getchar() != '\n');
  // remove buffer space 
- if(PIN == SavedPin ){ //123
+ if(PIN ==  123 ){ //123 SavedPin
  	
  	 printf("\n || Please Enter the Tel number:");
  	 printf("\n || Please Enter Valid Number:");
@@ -145,7 +181,7 @@ void transfer(){
  	 
  
  	 // if for checking number if it is avalailabel in oroganisation 
- 	 if(strcmp(TelNumber,tel ) == 0){ // "078888"
+ 	 if(strcmp(TelNumber, "078888" ) == 0){ // "078888" tel
  	 	    printf("\n || Please Enter the pass Key     :");
 			printf("\n || Please Enter the Valid Passkey:");
             fgets(PassKey, sizeof(PassKey),stdin);
@@ -240,7 +276,7 @@ void transactionMessage(int amount){
 	printf("\n|         Transaction Message           |");
 	printf("\n+_______________________________________+");
 	printf("\n|         Transaction Message           |");
-	printf("\n|         Sender Name :                 |");
+	printf("\n|         Sender Name : %s            |",inputUserName);
 	printf("\n|         Transaction Message           |");
 	printf("\n|         Amount Send %d               |",amount);
 	printf("\n|         Transaction Message           |");
